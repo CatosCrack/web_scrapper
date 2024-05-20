@@ -4,13 +4,14 @@ import datetime
 import re
 import pandas as pd
 from email_sender import send_email
+from tqdm import tqdm
 
 def scrapper(target_month, duration):
     current_year = datetime.date.today().year
     month_cal = list(Calendar().itermonthdates(current_year, target_month))
     results = {}
     
-    for date in month_cal:
+    for date in tqdm(month_cal):
         start_day = date.day
         start_month = date.month
         n_days = monthrange(current_year, start_month)[1]
@@ -22,7 +23,7 @@ def scrapper(target_month, duration):
             end_day = start_day + duration
             end_month = start_month
 
-        print(f"Start Date: {start_day}. Start Month:{start_month}. End Day:{end_day}. End Month: {end_month}")
+        #print(f"Start Date: {start_day}. Start Month:{start_month}. End Day:{end_day}. End Month: {end_month}")
 
         url = f"https://vacancesessipit.com/en/search/?start_date={start_month}%2F{start_day}%2F{current_year}&end_date={end_month}%2F{end_day}%2F{current_year}&tabs=terrain-de-camping&sortby=price&emplacement%5B%5D=mer-et-monde&equipment_type=0&longueur_type=0&equipment_services=0&equipment_damperage=0&services%5B%5D=vue-sur-le-fleuve"
         date_key = f"{start_day}/{start_month}-{end_day}/{end_month}"
@@ -62,3 +63,4 @@ def scrapper(target_month, duration):
     df.to_csv("available_days.csv")
 
 scrapper(9,2)
+send_email("available_days.csv")
