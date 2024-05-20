@@ -1,6 +1,6 @@
 from urllib.request import urlopen
 from calendar import Calendar, monthrange
-import datetime
+from datetime import datetime, timedelta
 import re
 import pandas as pd
 from email_sender import send_email
