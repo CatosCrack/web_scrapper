@@ -1,29 +1,31 @@
 from urllib.request import urlopen
-from calendar import Calendar
+from calendar import Calendar, monthrange
 import datetime
 import re
+import pandas as pd
+from email_sender import send_email
 
 def scrapper(target_month, duration):
     current_year = datetime.date.today().year
     month_cal = list(Calendar().itermonthdates(current_year, target_month))
-    n_days = len(month_cal)
-
-    url_ls = []
+    results = {}
     
     for date in month_cal:
         start_day = date.day
-        start_month = target_month
+        start_month = date.month
+        n_days = monthrange(current_year, start_month)[1]
 
         if start_day + duration > n_days:
-            end_day = n_days - start_day - duration
+            end_day = -(n_days - start_day - duration)
             end_month = start_month + 1
         else:
             end_day = start_day + duration
             end_month = start_month
 
-        url = f"https://vacancesessipit.com/en/search/?start_date={start_month}%2F{start_day}%2F{current_year}&end_date={end_month}%2F{end_day}%2F{current_year}&tabs=terrain-de-camping&sortby=price&emplacement%5B%5D=mer-et-monde&equipment_type=0&longueur_type=0&equipment_services=0&equipment_damperage=0"
-        url_ls.append(url)
+        print(f"Start Date: {start_day}. Start Month:{start_month}. End Day:{end_day}. End Month: {end_month}")
 
+        url = f"https://vacancesessipit.com/en/search/?start_date={start_month}%2F{start_day}%2F{current_year}&end_date={end_month}%2F{end_day}%2F{current_year}&tabs=terrain-de-camping&sortby=price&emplacement%5B%5D=mer-et-monde&equipment_type=0&longueur_type=0&equipment_services=0&equipment_damperage=0&services%5B%5D=vue-sur-le-fleuve"
+        date_key = f"{start_day}/{start_month}-{end_day}/{end_month}"
         # urlopen will get an encoded HTTP response
         page = urlopen(url)
 
@@ -54,9 +56,9 @@ def scrapper(target_month, duration):
             value = "$" + campsite_prices[i][i_start:i_end]
     
             data_dict[key] = value
+            results[date_key] = data_dict
             
-            print(data_dict)
-
-    print(url_ls)
+    df = pd.DataFrame.from_dict(results)
+    df.to_csv("available_days.csv")
 
 scrapper(9,2)
