@@ -1,11 +1,11 @@
 # Web Scrapper
 This is a simple web scrapper that uses Python's urllib and smtplib to send an email containing the available campsites in a very popular campgound in Bergeronne, Québec. The scrapper for a 2-night stay in a target month starting either on Friday or Saturday and sends a csv file containing the nightly rate per campground for each of the dates checked.
 
-[csv_file]
+![csv_file](https://github.com/CatosCrack/web_scrapper/blob/main/images/csv_screenshot.png)
 
 ## Target Website
 
-[website screenshot]
+![website screenshot](https://github.com/CatosCrack/web_scrapper/blob/main/images/website_screenshot.png)
 
 The website uses utm parameters to communicate to the server the check-in and check-out dates along with other options. 
 
