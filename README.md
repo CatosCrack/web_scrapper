@@ -66,3 +66,37 @@ campsite_prices = re.findall(price_pattern, html)
 All the data is then stored to the **data_dict** dictionary which will then be used as the content for another dictionary called **results**. 
 
 After gathering the results for all the dates in the target month, we turn **results** into a pandas dataframe and create a csv file from it. Once the csv file is saved in the root directory, the script calls the **send_email** function from email_sender.py to share the document via email.
+
+## email_sender.py
+The **send_email** function requires a file path for the attachement that will be added to the email address.
+
+Using the email library, we create a multipart email that contains a body (MIMEText) and an attachment (MIMEBase).
+
+```python
+message = MIMEMultipart()
+message["From"] = address
+message["To"] = address
+message["Subject"] = "Camping - Search Results"
+
+message.attach(MIMEText(body, "plain"))
+
+# Encode attachement
+filename = attachment
+with open(filename, "rb") as file:
+part = MIMEBase("application", "octet-stream")
+part.set_payload(file.read())
+
+# Encode attachment using ASCII characters
+encoders.encode_base64(part)
+part.add_header("Content-Disposition", f"attachment; filename= {filename}")
+
+# Add attachment to multipart email
+message.attach(part)
+```
+Finally, we create a SMTP context to send the email using the gmail servers.
+
+```python
+ with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+        server.login(address, password)
+        server.sendmail(address, address, message)
+```
