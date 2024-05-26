@@ -23,11 +23,15 @@ def send_email(attachment):
     # Encode attachement
     filename = attachment
     with open(filename, "rb") as file:
+        #Contenty-Type: Application/Octet-stream means that the file is binary data of unidentified type
         part = MIMEBase("application", "octet-stream")
+        #set_payload() assigns the content to the instance of MIMEBase
         part.set_payload(file.read())
 
     # Encode attachment using ASCII characters
     encoders.encode_base64(part)
+    #Content-Disposition: Attachment means that this is a file you need to download
+    #Filename is added to let the browser know what name to use when the file is saved to disk
     part.add_header("Content-Disposition", f"attachment; filename= {filename}")
 
     # Add attachment to multipart email
